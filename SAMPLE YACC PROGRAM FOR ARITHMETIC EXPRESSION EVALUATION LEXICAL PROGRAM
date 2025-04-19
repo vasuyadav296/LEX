@@ -1,0 +1,24 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include "y.tab.h"  // Include Yacc header file for token definitions
+%}
+
+%%
+
+[0-9]+         { yylval = atoi(yytext); return NUM; }    // Handle numbers
+[\t\n]          { /* Ignore whitespace */ }
+[+\-*/()]       { return yytext[0]; }  // Return operators and parentheses as is
+.               { printf("Invalid character: %s\n", yytext); exit(1); }
+
+%%
+
+int yywrap() {
+    return 1;  // Return 1 to indicate end of input
+}
+
+int main() {
+    printf("Enter an arithmetic expression:\n");
+    yyparse();  // Start the parsing process
+    return 0;
+}
