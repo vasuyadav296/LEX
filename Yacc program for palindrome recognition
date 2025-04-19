@@ -1,0 +1,50 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_LENGTH 100
+
+char input[MAX_LENGTH];  // Array to store the input string
+int top = -1;            // Pointer for stack-based approach
+
+%}
+
+%token CHAR
+
+%%
+
+program:
+    string { 
+        if (is_palindrome()) {
+            printf("The string is a palindrome.\n");
+        } else {
+            printf("The string is not a palindrome.\n");
+        }
+    }
+;
+
+string:
+    /* Empty string */
+    | string CHAR { input[++top] = $2; }  // Push character to stack
+
+;
+
+%%
+
+// Function to check if the string is a palindrome
+int is_palindrome() {
+    int left = 0, right = top;
+    while (left < right) {
+        if (input[left] != input[right]) {
+            return 0;  // Not a palindrome
+        }
+        left++;
+        right--;
+    }
+    return 1;  // It's a palindrome
+}
+
+int main() {
+    yyparse();  // Start parsing the input
+    return 0;
+}
