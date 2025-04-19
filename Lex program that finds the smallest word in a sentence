@@ -1,0 +1,37 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+char smallest_word[100];  // Array to hold the smallest word
+int min_length = 1000;    // Variable to track the minimum word length
+%}
+
+%%
+
+[a-zA-Z]+ {  // Match words (alphanumeric sequences)
+    int length = strlen(yytext);  // Get the length of the word
+    
+    if (length < min_length) {  // If it's smaller than the current smallest
+        min_length = length;
+        strcpy(smallest_word, yytext);  // Update smallest word
+    }
+}
+
+[ \t\n]+ { /* Ignore spaces, tabs, and newlines */ }
+
+. { /* Ignore any non-alphabetical characters */ }
+
+%%
+
+int main() {
+    printf("Enter a sentence:\n");
+    yylex();  // Start the lexical analysis
+    
+    if (min_length != 1000) {  // If at least one word was found
+        printf("Smallest word: %s\n", smallest_word);
+    } else {
+        printf("No valid words found.\n");
+    }
+
+    return 0;
+}
