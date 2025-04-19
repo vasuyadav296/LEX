@@ -1,0 +1,28 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SIZE 1000
+char stack[MAX_SIZE]; // Stack to hold the characters
+int top = -1; // Stack pointer
+%}
+
+%%
+
+.   { 
+        if (top < MAX_SIZE - 1) { // Check if stack is not full
+            stack[++top] = yytext[0]; // Push character to stack
+        }
+    }
+
+%%
+
+int main() {
+    yylex(); // Perform lexical analysis
+    // After the input is processed, print the stack in reverse order
+    while (top >= 0) {
+        putchar(stack[top--]); // Pop and print each character
+    }
+    return 0;
+}
