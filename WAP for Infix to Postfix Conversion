@@ -1,0 +1,82 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX_STACK_SIZE 100
+char stack[MAX_STACK_SIZE];  // Stack to hold operators
+int top = -1;  // Stack pointer
+
+// Function to check precedence of operators
+int precedence(char op) {
+    if (op == '+' || op == '-') return 1;
+    if (op == '*' || op == '/') return 2;
+    return 0;
+}
+
+// Function to check if a character is an operator
+int is_operator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
+
+// Function to push an operator onto the stack
+void push(char op) {
+    if (top < MAX_STACK_SIZE - 1) {
+        stack[++top] = op;
+    } else {
+        printf("Stack overflow\n");
+    }
+}
+
+// Function to pop an operator from the stack
+char pop() {
+    if (top >= 0) {
+        return stack[top--];
+    }
+    return '\0';  // Return null character if stack is empty
+}
+
+// Function to print postfix expression
+void print_postfix(const char* token) {
+    printf("%s ", token);
+}
+
+// Main Lex action
+%%
+
+[0-9]+ { print_postfix(yytext); }  // Print numbers directly
+
+\+|\-|\*|\/ {
+    // Handle operators: pop from stack and print if precedence is lower or equal
+    while (top >= 0 && precedence(stack[top]) >= precedence(yytext[0])) {
+        printf("%c ", pop());
+    }
+    push(yytext[0]);  // Push the current operator to the stack
+}
+
+\(|\) {
+    if (yytext[0] == '(') {
+        push('(');  // Push '(' to the stack
+    } else {
+        // Pop all operators until '(' is found
+        while (top >= 0 && stack[top] != '(') {
+            printf("%c ", pop());
+        }
+        pop();  // Pop '(' from the stack
+    }
+}
+
+[ \t\n]+ { /* Ignore spaces, tabs, and newlines */ }
+
+%%
+
+int main() {
+    yylex();  // Perform lexical analysis
+    // After the input is processed, pop and print any remaining operators in the stack
+    while (top >= 0) {
+        printf("%c ", pop());
+    }
+    printf("\n");
+    return 0;
+}
